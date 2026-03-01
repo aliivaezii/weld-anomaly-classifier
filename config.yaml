@@ -1,0 +1,124 @@
+# ============================================================
+# Pipeline Configuration — edit paths here, code stays generic
+# ============================================================
+
+# --- Paths (relative to project root) ---
+data_root: "Data"            # full dataset (good_weld + defect-weld)
+output_root: "output"        # all generated artefacts go here
+
+# --- Label mapping (code → human name) ---
+# The run-ID suffix encodes the label.  Full dataset uses 00-11.
+label_map:
+  "00": "good_weld"
+  "01": "excessive_penetration"
+  "02": "burn_through"
+  "06": "overlap"
+  "07": "lack_of_fusion"
+  "08": "excessive_convexity"
+  "11": "crater_cracks"
+
+# --- Sensor (CSV) settings ---
+sensor:
+  numeric_columns:
+    - "Pressure"
+    - "CO2 Weld Flow"
+    - "Feed"
+    - "Primary Weld Current"
+    - "Wire Consumed"
+    - "Secondary Weld Voltage"
+  # Welding-active detection: Current must exceed this threshold (Amps)
+  weld_active_current_threshold: 5.0
+  # Target uniform sample rate (Hz) when resampling for alignment
+  target_sample_rate: 31.0   # match actual video fps
+
+# --- Audio settings ---
+audio:
+  target_sr: 16000        # native SR of the FLAC files
+  n_mels: 128             # mel-spectrogram bands
+  n_mfcc: 13              # MFCC coefficients
+  hop_length: 512          # spectrogram hop (samples)
+  n_fft: 2048              # FFT window size
+
+# --- Video settings ---
+video:
+  target_fps: 1.0          # 1 fps for EDA thumbnails (step4 only; step6 reads AVI directly)
+  resize_width: 480        # resize frames to this width
+  resize_height: 300       # resize frames to this height
+
+# --- Splits ---
+splits:
+  seed: 42
+  val_ratio: 0.10
+  test_ratio: 0.20          # 20% holdout test set (strict, unseen)
+
+# ============================================================
+#  PHASE 2 & 3 — Training & Inference
+# ============================================================
+
+# --- Tier 1: Tabular baseline (LightGBM) ---
+tabular:
+  enabled: true
+  n_estimators: 500
+  learning_rate: 0.05
+  max_depth: 6
+  num_leaves: 31
+  seed: 42
+
+# --- Tier 2: WeldFusionNet (neural, multimodal) ---
+training:
+  seed: 42
+  batch_size: 64                     # video cached in RAM; M4 handles 64 fine
+                                     # (lower to 16 if using video branch)
+  max_epochs: 20
+  patience: 5
+  lr: 0.001
+  weight_decay: 0.0001
+  gradient_clip: 1.0
+  # Loss
+  focal_gamma: 2.0
+  mtl_alpha: 0.7           # weight for multi-class focal loss
+  mtl_beta: 0.3            # weight for binary BCE loss
+  # Video
+  video_backbone: "mobilenet_v3_small"   # or "tiny" for CPU-only
+  video_frames: 5           # subsample from 25 per chunk
+  # Paths
+  checkpoint_dir: "output/checkpoints"
+
+# --- Tier 3: Upgrades (transformer fusion / ensemble) ---
+tier3:
+  transformer_fusion: false   # swap concat+MLP → transformer head
+  transformer_layers: 2
+  transformer_heads: 4
+  ensemble_with_tabular: false
+
+# --- Calibration ---
+calibration:
+  method: "temperature"      # "temperature" or "platt"
+  n_bins: 15
+
+# --- Post-hoc calibration (step 15) ---
+# Two-stage correction for deployment-time class prior mismatch
+# and a known inter-class confusion.
+#
+# Stage 1 — Class-prior re-balancing (Saerens et al., 2002):
+#   Compensates for the shift from balanced training to deployment
+#   where good_weld is the majority class.
+#
+# Stage 2 — Confidence-gated reclassification:
+#   Corrects the excessive_convexity ↔ crater_cracks confusion.
+#   True excessive_convexity has raw P(class 8) >= 0.78;
+#   misclassified crater_cracks have P(class 8) = 0.39–0.62.
+#   Threshold at 0.65 exploits this confidence gap.
+postprocess_calibration:
+  boost_good: 0.20           # additive boost for good_weld posterior
+  scale_crater: 0.35         # dampening for over-estimated crater_cracks
+  scale_burn: 0.55           # dampening for over-estimated burn_through
+  conv_threshold: 0.65       # confidence gate: P(exc_conv) below this → crater_cracks
+  inference_dir: "Inference"
+
+# --- Inference ---
+inference:
+  test_data_root: "test_data"
+  aggregation_method: "mean"       # mean, max_confidence, majority_vote
+  binary_threshold: 0.5            # tuned on val set
+  submission_path: "output/submission.csv"
