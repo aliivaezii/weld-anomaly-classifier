@@ -24,23 +24,6 @@
 
 ---
 
-## Dashboard Preview
-
-<p align="center">
-  <img src="Demo/3d-explorer.jpg" width="45%" alt="3D Feature Explorer" />
-  <img src="Demo/feature-insights.jpg" width="45%" alt="Feature Insights" />
-</p>
-<p align="center">
-  <img src="Demo/training-curves.jpg" width="45%" alt="Training Curves" />
-  <img src="Demo/validation.jpg" width="45%" alt="Validation Results" />
-</p>
-<p align="center">
-  <img src="Demo/class-balance.jpg" width="45%" alt="Class Balance" />
-  <img src="Demo/inference.jpg" width="45%" alt="Inference" />
-</p>
-
----
-
 ## Repository Structure
 
 ```
@@ -74,10 +57,6 @@
 │   ├── submission_optimized.csv # Final submission file
 │   ├── predictions_detailed.csv # Raw 7-class probability vectors
 │   └── calibration_params.json  # Saved calibration parameters
-│
-├── dashboard/                   # Streamlit monitoring dashboard
-│
-├── Demo/                        # Dashboard screenshots
 │
 ├── Data/                        # Raw weld data (not tracked — see below)
 ├── test_data/                   # External test samples (not tracked)
