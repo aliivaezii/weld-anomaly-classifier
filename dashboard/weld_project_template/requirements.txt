@@ -1,0 +1,10 @@
+pandas
+pyyaml
+streamlit
+plotly
+opencv-python
+librosa
+soundfile
+pyarrow
+streamlit-option-menu
+st-aggrid
