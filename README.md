@@ -216,5 +216,5 @@ This project is licensed under the [MIT License](LICENSE).
 ---
 
 <p align="center">
-  <em>Built with ❤️ by Ali Vaezi, Sajjad Shahali & Kiana Salimi — I3P Hackathon, March 2026</em>
+  <em>Built by Ali Vaezi, Sajjad Shahali & Kiana Salimi — I3P Hackathon, March 2026</em>
 </p>
