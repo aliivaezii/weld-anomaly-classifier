@@ -1,0 +1,9 @@
+{
+  "n_samples": 115,
+  "final_score": 0.6816,
+  "binary_f1": 0.7132,
+  "type_macro_f1": 0.6341,
+  "multiclass_accuracy": 0.5565,
+  "binary_accuracy": 0.6783,
+  "temperature": 1.0
+}
