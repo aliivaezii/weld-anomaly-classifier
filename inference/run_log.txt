@@ -1,0 +1,23 @@
+================================================================
+  INFERENCE PIPELINE — Audio + Video model
+  Test data : test_data
+  Checkpoint: Inference/best_model.pt
+  Work dir  : Inference/test_eval
+  Output    : Inference
+  Skipping steps 1-6 (reusing existing chunks)
+================================================================
+
+  Model flags: use_sensor=False, use_video=True
+  Temperature: 1.0
+  Using embedded norm_stats from checkpoint
+
+  Loaded existing manifest: 4103 chunks from Inference/test_eval/manifest.csv
+
+── Inference: Loading model ──
+  Model: WeldFusionNet (fusion=concat, modalities=audio+video)
+  Parameters: 1,097,129 total, 814,761 trainable
+  Model: WeldFusionNet (fusion=concat, modalities=audio+video)
+  Parameters: 1,097,129 total, 814,761 trainable
+  Device: mps
+
+── Running inference on 115 runs ──
