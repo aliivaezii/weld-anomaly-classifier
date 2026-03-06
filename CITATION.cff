@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "WeldFusionNet: Multimodal Deep Learning for Automated Weld Defect Classification"
+type: software
+authors:
+  - family-names: "Vaezi"
+    given-names: "Ali"
+    orcid: "https://orcid.org/0009-0003-7400-8688"
+  - family-names: "Shahali"
+    given-names: "Sajjad"
+  - family-names: "Salimi"
+    given-names: "Kiana"
+repository-code: "https://github.com/aliivaezii/weld-anomaly-classifier"
+license: MIT
+keywords:
+  - deep-learning
+  - multimodal
+  - weld-inspection
+  - defect-detection
+  - pytorch
+  - computer-vision
+  - industrial-ai
+  - quality-control
